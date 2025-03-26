@@ -3,6 +3,7 @@
 @inject HttpClient Http
 @inject AuthService AuthService
 @inject NavigationManager NavManager
+@inject IConfiguration Configuration
 
 <h3>Checkout - Multiple Payment Methods</h3>
 
@@ -59,9 +60,9 @@ else
                 <input type="hidden" name="amount" value="@grandTotal" />
                 <input type="hidden" name="currency_code" value="USD" />
                 <input type="hidden" name="return"
-                       value="@Configuration["FeUrl"]/payment-success?method=paypal&orderId=@paypalOrderId" />
+                       value="@($"{Configuration["FeUrl"]}/payment-success?method=paypal&orderId=@paypalOrderId")" />
                 <input type="hidden" name="cancel_return"
-                       value="@Configuration["FeUrl"]/payment-cancel?method=paypal" />
+                       value="@($"{Configuration["FeUrl"]}/payment-cancel?method=paypal")" />
 
                 <input type="submit" class="btn btn-secondary" value="Pay with PayPal" />
             </form>
@@ -93,14 +94,13 @@ else
         await AuthService.SetAuthHeaderAsync();
 
         // Load the user's cart
-        cartItems = await Http.GetFromJsonAsync<List<CartItemDto>>("api/cart");
+        cartItems = await Http.GetFromJsonAsync<List<CartItemDto>>($"{Configuration["ApiBaseUrl"]}/api/cart");
         if (cartItems != null && cartItems.Count > 0)
         {
             grandTotal = cartItems.Sum(ci => ci.Quantity * ci.UnitPrice);
         }
     }
 
-    // 1) Stripe (Webhook) - your existing flow
     private async Task InitiateStripePaymentWebhook()
     {
         var request = new PaymentRequest
@@ -109,7 +109,7 @@ else
             Currency = "usd"
         };
 
-        var response = await Http.PostAsJsonAsync("api/payments/create-checkout-session", request);
+        var response = await Http.PostAsJsonAsync($"{Configuration["ApiBaseUrl"]}/api/payments/create-checkout-session", request);
         if (response.IsSuccessStatusCode)
         {
             var paymentResp = await response.Content.ReadFromJsonAsync<PaymentResponse>();
@@ -118,21 +118,17 @@ else
                 NavManager.NavigateTo(paymentResp.PaymentUrl, forceLoad: true);
             }
         }
-    
     }
 
-    // 2) PayPal - create an order on the server, then show the sandbox form
     private async Task CreatePayPalOrder()
     {
-        // calls e.g. /api/paypal/create-order
-        var response = await Http.PostAsync("api/paypal/create-order", null);
+        var response = await Http.PostAsync($"{Configuration["ApiBaseUrl"]}/api/paypal/create-order", null);
         if (response.IsSuccessStatusCode)
         {
             paypalOrderId = await response.Content.ReadFromJsonAsync<int>();
         }
     }
 
-    // 3) Stripe (No Webhook)
     private async Task InitiateStripePaymentNoWebhook()
     {
         var request = new PaymentRequest
@@ -141,20 +137,17 @@ else
             Currency = "usd"
         };
 
-        // calls e.g. /api/payments/create-checkout-session-nowebhook
-        var response = await Http.PostAsJsonAsync("api/payments/create-checkout-session-nowebhook", request);
+        var response = await Http.PostAsJsonAsync($"{Configuration["ApiBaseUrl"]}/api/payments/create-checkout-session-nowebhook", request);
         if (response.IsSuccessStatusCode)
         {
             var paymentResp = await response.Content.ReadFromJsonAsync<PaymentResponse>();
             if (!string.IsNullOrEmpty(paymentResp?.PaymentUrl))
             {
-                // redirect user to Stripe's Checkout
                 NavManager.NavigateTo(paymentResp.PaymentUrl, forceLoad: true);
             }
         }
     }
 
-    // Minimal models
     public class CartItemDto
     {
         public int ProductId { get; set; }

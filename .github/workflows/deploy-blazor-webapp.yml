@@ -1,40 +1,39 @@
-name: Build and Deploy Blazor WebAssembly to Azure App Service
+name: Deploy Blazor WebAssembly App
 
 on:
-  workflow_dispatch: # Manual trigger for deployment
+  workflow_dispatch: # Manual trigger
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Checkout the code from the repository
-    - name: Checkout code
-      uses: actions/checkout@v3
+      # Check out the repository code
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
-    # 2. Set up the .NET environment
-    - name: Set up .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '9.0.x' # Ensure the .NET version matches your project
+      # Set up .NET 9.0 SDK
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0.x'
+      
+      # Restore NuGet packages
+      - name: Restore Dependencies
+        run: dotnet restore
 
-    # 3. Restore dependencies
-    - name: Restore dependencies
-      run: dotnet restore
+      # Build the solution in Release configuration
+      - name: Build Solution
+        run: dotnet build --configuration Release --no-restore
 
-    # 4. Build the application
-    - name: Build the app
-      run: dotnet build --configuration Release
+      # Publish the app to a local folder
+      - name: Publish Application
+        run: dotnet publish --configuration Release --output ./publish --no-build
 
-    # 5. Publish the app
-    - name: Publish the app
-      run: dotnet publish -c Release -o ${{ github.workspace }}/publish
-
-    # 6. Deploy the app to Azure App Service
-    - name: Deploy to Azure Web App
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: courageBlazorFEApp # Replace with your Azure App Service name
-        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }} # Add your publish profile to secrets
-        package: ${{ github.workspace }}/publish/wwwroot # Deploy only the 'wwwroot' folder (static files)
-
+      # Deploy to Azure App Service using the publish profile stored in repository secrets
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: courageBlazorFEApp
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: ./publish

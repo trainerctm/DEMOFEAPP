@@ -59,9 +59,9 @@ else
                 <input type="hidden" name="amount" value="@grandTotal" />
                 <input type="hidden" name="currency_code" value="USD" />
                 <input type="hidden" name="return"
-                       value="https://localhost:7090/payment-success?method=paypal&orderId=@paypalOrderId" />
+                       value="@Configuration["FeUrl"]/payment-success?method=paypal&orderId=@paypalOrderId" />
                 <input type="hidden" name="cancel_return"
-                       value="https://localhost:7090/payment-cancel?method=paypal" />
+                       value="@Configuration["FeUrl"]/payment-cancel?method=paypal" />
 
                 <input type="submit" class="btn btn-secondary" value="Pay with PayPal" />
             </form>

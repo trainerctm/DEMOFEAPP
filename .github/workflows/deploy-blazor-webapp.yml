@@ -1,33 +1,40 @@
-name: Build and Deploy Blazor WebAssembly to Azure
+name: Build and Deploy Blazor WebAssembly to Azure App Service
 
 on:
-  workflow_dispatch: # Allows the workflow to be triggered manually
+  workflow_dispatch: # Manual trigger for deployment
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
+    # 1. Checkout the code from the repository
     - name: Checkout code
       uses: actions/checkout@v3
 
+    # 2. Set up the .NET environment
     - name: Set up .NET
       uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: '9.0.x' # Specify .NET version
+        dotnet-version: '9.0.x' # Ensure the .NET version matches your project
 
+    # 3. Restore dependencies
     - name: Restore dependencies
       run: dotnet restore
 
+    # 4. Build the application
     - name: Build the app
       run: dotnet build --configuration Release
 
+    # 5. Publish the app
     - name: Publish the app
       run: dotnet publish -c Release -o ${{ github.workspace }}/publish
 
+    # 6. Deploy the app to Azure App Service
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
       with:
-        app-name: courageBlazorFEApp # Replace with your App Service name
-        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-        package: ${{ github.workspace }}/publish/wwwroot # Deploy the Blazor WebAssembly files
+        app-name: courageBlazorFEApp # Replace with your Azure App Service name
+        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }} # Add your publish profile to secrets
+        package: ${{ github.workspace }}/publish/wwwroot # Deploy only the 'wwwroot' folder (static files)
+

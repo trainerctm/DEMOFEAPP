@@ -1,0 +1,80 @@
+@page "/admin/userroles"
+@using DemoFEApp.Models;
+@using DemoFEApp.AuthServices;
+@inject HttpClient Http;
+@inject AuthService AuthService;
+
+<h3>User Role Management</h3>
+
+@if (users == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Current Role</th>
+                <th>New Role</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in users)
+            {
+                <tr>
+                    <td>@user.Username</td>
+                    <td>@user.Role</td>
+                    <td>
+                        <select @bind="user.NewRole">
+                            <option value="customer">Customer</option>
+                            <option value="administrator">Administrator</option>
+                            <option value="vendor">Vendor</option>
+                        </select>
+                    </td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="() => UpdateUserRole(user)">Update</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+      @if (!string.IsNullOrEmpty(confirmationMessage))
+    {
+        <div class="alert alert-success" role="alert">
+            @confirmationMessage
+        </div>
+    }
+}
+
+@code {
+    private List<UserWithRole> users = new List<UserWithRole>();
+        private string confirmationMessage = "";
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await AuthService.SetAuthHeaderAsync();
+        users = await Http.GetFromJsonAsync<List<UserWithRole>>("api/userprofiles");
+    }
+
+    async Task UpdateUserRole(UserWithRole user)
+    {
+        var response = await Http.PutAsJsonAsync($"api/userprofiles/{user.Id}/role", user.NewRole);
+        if (response.IsSuccessStatusCode)
+        {
+            user.Role = user.NewRole;
+            confirmationMessage = "Role updated successfully!";
+        }
+    }
+
+    public class UserWithRole
+    {
+        public int Id { get; set; }
+        public string? Username { get; set; }
+        public string? Role { get; set; }
+        public string? NewRole { get; set; } 
+    }
+}

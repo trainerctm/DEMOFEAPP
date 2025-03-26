@@ -1,0 +1,98 @@
+@page "/product-details/{id:int}"
+@using DemoFEApp.AuthServices
+@using DemoFEApp.Services
+@using DemoFEApp.Models
+@inject ProductService ProductService
+@inject NavigationManager Navigation
+@inject AuthService AuthService
+@inject HttpClient Http
+
+@if (product == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <div style="display: flex; align-items: flex-start; gap: 20px 20px;">
+
+        
+        <div style="flex: 3; align-items: center;">
+            <h3>@product.Name</h3>
+            <p><strong>Price:</strong> @product.Price</p>
+            <p><strong>Stock:</strong> @product.Stock</p>
+
+      
+            <div style="margin-top: 20px;">
+              
+                <button class="btn btn-primary" @onclick="ContinueShopping">
+                    Continue Shopping
+                </button>
+
+         
+                <button class="btn btn-success" @onclick="AddToCart" style="margin-left: 10px;">
+                    Add to Cart
+                </button>
+            </div>
+        </div>
+
+     
+        <div>
+            <img src="@product.ImageUrl" alt="Product image" style="min-width: 300px; height: 300px;" />
+        </div>
+    </div>
+}
+@if (!string.IsNullOrEmpty(addToCartMessage))
+{
+    <div class="alert alert-info">@addToCartMessage</div>
+}
+
+
+@code {
+    [Parameter] public int id { get; set; }
+    private Product product;
+    private string addToCartMessage = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        product = await ProductService.GetProductByIdAsync(id);
+    }
+
+    
+    private void ContinueShopping()
+    {
+        Navigation.NavigateTo("/products");
+    }
+
+     private async Task AddToCart()
+    {
+        addToCartMessage = "";
+
+        var cartItemDto = new CartItemDto
+    {
+        ProductId = product.Id,
+        Quantity = 1,
+        UnitPrice = product.Price
+    };
+
+        await AuthService.SetAuthHeaderAsync(); // attach JWT
+        var response = await Http.PostAsJsonAsync("api/cart", cartItemDto);
+        if (response.IsSuccessStatusCode)
+        {
+             addToCartMessage = $"{product.Name} was added to cart!";
+        }
+        else
+        {
+            addToCartMessage = "Failed to add to cart.";
+        }
+    }
+
+    public class CartItem
+    {
+        public int Id { get; set; }
+        public int ProductId { get; set; }
+        public int Quantity { get; set; }
+        public decimal UnitPrice { get; set; }
+        public string UserId { get; set; } = string.Empty;
+    }
+ 
+}

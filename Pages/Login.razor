@@ -1,0 +1,13 @@
+@page "/login"
+@inject NavigationManager NavManager
+
+<h3>Login with GitHub</h3>
+
+<button @onclick="LoginWithGitHub">Sign In</button>
+
+@code {
+    private void LoginWithGitHub()
+    {
+        NavManager.NavigateTo("https://localhost:7224/auth/login", forceLoad: true);
+    }
+}

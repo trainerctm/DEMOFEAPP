@@ -1,0 +1,63 @@
+@page "/orders"
+@using DemoFEApp.AuthServices
+@inject HttpClient Http
+@inject AuthService AuthService
+
+<h3>My Orders</h3>
+
+@if (orders == null)
+{
+    <p>Loading...</p>
+}
+else if (orders.Count == 0)
+{
+    <p>You have no orders.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Status</th>
+                <th>Created</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in orders)
+            {
+                <tr>
+                    <td>@order.Id</td>
+                    <td>@order.Status</td>
+                    <td>@order.CreatedAt</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<OrderDto>? orders;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await AuthService.SetAuthHeaderAsync();
+        orders = await Http.GetFromJsonAsync<List<OrderDto>>("api/orders");
+    }
+
+    public class OrderDto
+    {
+        public int Id { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; }
+        public List<OrderItemDto> OrderItems { get; set; } = new();
+    }
+
+    public class OrderItemDto
+    {
+        public int Id { get; set; }
+        public int ProductId { get; set; }
+        public int Quantity { get; set; }
+        public decimal UnitPrice { get; set; }
+    }
+}

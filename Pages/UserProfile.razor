@@ -1,0 +1,90 @@
+@page "/myprofile"
+@using DemoFEApp.AuthServices
+@inject HttpClient Http
+@inject AuthService AuthService
+@inject NavigationManager NavManager
+
+<h3>My Profile</h3>
+
+@if (profile == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <EditForm Model="profile" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div>
+            <label>Username: </label>
+            <InputText @bind-Value="profile.Username" disabled />
+        </div>
+        <div>
+            <label>First Name: </label>
+            <InputText @bind-Value="profile.FirstName" />
+        </div>
+        <div>
+            <label>Last Name: </label>
+            <InputText @bind-Value="profile.LastName" />
+        </div>
+        <div>
+            <label>Address: </label>
+            <InputText @bind-Value="profile.Address" />
+        </div>
+        <div>
+            <label>Email: </label>
+            <InputText @bind-Value="profile.Email" />
+        </div>
+        <div>
+            <label>Phone Number: </label>
+            <InputText @bind-Value="profile.PhoneNumber" />
+        </div>
+        <button type="submit">Update Profile</button>
+    </EditForm>
+    
+    @if (!string.IsNullOrEmpty(confirmationMessage))
+    {
+        <div class="alert alert-success" role="alert">
+            @confirmationMessage
+        </div>
+    }
+}
+
+@code {
+    UserProfileModel profile = new UserProfileModel();
+    private string confirmationMessage = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await AuthService.SetAuthHeaderAsync();
+        profile = await Http.GetFromJsonAsync<UserProfileModel>("api/userprofiles/me") ?? new UserProfileModel();
+    }
+
+    async Task HandleValidSubmit()
+    {
+        var response = await Http.PutAsJsonAsync("api/userprofiles/me", profile);
+        if (response.IsSuccessStatusCode)
+        {
+            confirmationMessage = "Your profile has been updated successfully!";
+            NavManager.NavigateTo("/", true);
+        }
+        else
+        {
+            confirmationMessage = "An error occurred while updating your profile.";
+        }
+    }
+
+    public class UserProfileModel
+    {
+        public int Id { get; set; }
+        public string GitHubId { get; set; } = string.Empty;
+        public string Username { get; set; } = string.Empty;
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
+        public string? Address { get; set; }
+        public string? Email { get; set; }
+        public string? PhoneNumber { get; set; }
+        public string Role { get; set; } = string.Empty;
+    }
+}

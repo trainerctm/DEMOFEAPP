@@ -1,0 +1,17 @@
+@page "/logout"
+@using DemoFEApp.AuthServices
+@inject NavigationManager NavManager
+@inject AuthService AuthService
+
+<h3>Logging out...</h3>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        // Clear the JWT from local storage
+        await AuthService.SaveTokenAsync(string.Empty);
+
+        // Redirect home
+        NavManager.NavigateTo("/", true);
+    }
+}

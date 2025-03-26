@@ -1,0 +1,109 @@
+is_global = true
+build_property.EnableAotAnalyzer = 
+build_property.EnableSingleFileAnalyzer = 
+build_property.EnableTrimAnalyzer = false
+build_property.IncludeAllContentForSelfExtract = 
+build_property.TargetFramework = net9.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = false
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = browser
+build_property.RootNamespace = DemoFEApp
+build_property.RootNamespace = DemoFEApp
+build_property.ProjectDir = E:\blazorplay\test4\DemoFEApp\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = false
+build_property.RazorLangVersion = 9.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = E:\blazorplay\test4\DemoFEApp
+build_property._RazorSourceGeneratorDebug = 
+build_property.EffectiveAnalysisLevelStyle = 9.0
+build_property.EnableCodeStyleSeverity = 
+
+[E:/blazorplay/test4/DemoFEApp/App.razor]
+build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/blazorplay/test4/DemoFEApp/Pages/Cart.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2FydC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/blazorplay/test4/DemoFEApp/Pages/Checkout.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2hlY2tvdXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/blazorplay/test4/DemoFEApp/Pages/Counter.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ291bnRlci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/blazorplay/test4/DemoFEApp/Pages/CreateProducts.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ3JlYXRlUHJvZHVjdHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/blazorplay/test4/DemoFEApp/Pages/Home.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSG9tZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/blazorplay/test4/DemoFEApp/Pages/Login.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9naW4ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/blazorplay/test4/DemoFEApp/Pages/Logout.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9nb3V0LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/blazorplay/test4/DemoFEApp/Pages/Orders.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcT3JkZXJzLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/blazorplay/test4/DemoFEApp/Pages/PaymentSuccess.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUGF5bWVudFN1Y2Nlc3MucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/blazorplay/test4/DemoFEApp/Pages/ProductDetails.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJvZHVjdERldGFpbHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/blazorplay/test4/DemoFEApp/Pages/Products.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJvZHVjdHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/blazorplay/test4/DemoFEApp/Pages/ProductsListCard.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJvZHVjdHNMaXN0Q2FyZC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/blazorplay/test4/DemoFEApp/Pages/ProductsSorted.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcUHJvZHVjdHNTb3J0ZWQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/blazorplay/test4/DemoFEApp/Pages/TokenReceiver.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcVG9rZW5SZWNlaXZlci5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/blazorplay/test4/DemoFEApp/Pages/UpdateProducts.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcVXBkYXRlUHJvZHVjdHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/blazorplay/test4/DemoFEApp/Pages/UserProfile.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcVXNlclByb2ZpbGUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/blazorplay/test4/DemoFEApp/Pages/UserRoleManagement.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcVXNlclJvbGVNYW5hZ2VtZW50LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/blazorplay/test4/DemoFEApp/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[E:/blazorplay/test4/DemoFEApp/Layout/MainLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = TGF5b3V0XE1haW5MYXlvdXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-sxg1fe30qu
+
+[E:/blazorplay/test4/DemoFEApp/Layout/NavMenu.razor]
+build_metadata.AdditionalFiles.TargetPath = TGF5b3V0XE5hdk1lbnUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-8kjp5qkx6p

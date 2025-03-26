@@ -1,0 +1,57 @@
+@page "/update-product/{id:int}"
+@inject ProductService ProductService
+@inject NavigationManager Navigation
+@using DemoFEApp.Models
+@using DemoFEApp.Services
+
+<h3>Update Product</h3>
+
+<EditForm Model="productToEdit" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label>Name:</label>
+        <InputText class="form-control" @bind-Value="productToEdit.Name" />
+    </div>
+    <div class="form-group">
+        <label>Price:</label>
+        <InputNumber class="form-control" @bind-Value="productToEdit.Price" />
+    </div>
+    <div class="form-group">
+        <label>Stock:</label>
+        <InputNumber class="form-control" @bind-Value="productToEdit.Stock" />
+    </div>
+    <!-- NEW: File Upload for updating image -->
+    <div class="form-group">
+        <label>Update Image:</label>
+        <InputFile OnChange="HandleFileSelected" />
+    </div>
+    <button type="submit" class="btn btn-primary">Update</button>
+</EditForm>
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private Product productToEdit = new();
+    private IBrowserFile? selectedFile;
+
+    protected override async Task OnInitializedAsync()
+    {
+        productToEdit = await ProductService.GetProductByIdAsync(Id);
+    }
+
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        await ProductService.UpdateProductAsync(Id, productToEdit);
+        if (selectedFile != null)
+        {
+            await ProductService.UploadProductImageAsync(Id, selectedFile);
+        }
+        Navigation.NavigateTo("/products");
+    }
+}

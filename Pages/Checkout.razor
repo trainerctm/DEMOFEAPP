@@ -1,0 +1,175 @@
+@page "/checkout"
+@using DemoFEApp.AuthServices
+@inject HttpClient Http
+@inject AuthService AuthService
+@inject NavigationManager NavManager
+
+<h3>Checkout - Multiple Payment Methods</h3>
+
+@if (cartItems == null)
+{
+    <p>Loading your cart...</p>
+}
+else if (cartItems.Count == 0)
+{
+    <p>Your cart is empty. <a href="/products">Continue Shopping</a></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Product ID</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in cartItems)
+            {
+                <tr>
+                    <td>@item.ProductId</td>
+                    <td>@item.Quantity</td>
+                    <td>@item.UnitPrice</td>
+                    <td>@(item.Quantity * item.UnitPrice)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <p><strong>Grand Total:</strong> @grandTotal</p>
+
+    <!-- 1) Pay with Stripe (Webhook) -->
+    <button class="btn btn-primary" @onclick="InitiateStripePaymentWebhook">
+        Pay with Stripe (Webhook)
+    </button>
+
+    <!-- 2) Pay with PayPal -->
+    @if (paypalOrderId > 0)
+    {
+        <div style="margin-top:20px;">
+            <form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post">
+                <input type="hidden" name="cmd" value="_xclick" />
+                <!-- Your PayPal sandbox business email -->
+                <input type="hidden" name="business" value="sandbox-business@example.com" />
+
+                <input type="hidden" name="item_name" value="MyApp Purchase" />
+                <input type="hidden" name="item_number" value="@paypalOrderId" />
+                <input type="hidden" name="amount" value="@grandTotal" />
+                <input type="hidden" name="currency_code" value="USD" />
+                <input type="hidden" name="return"
+                       value="https://localhost:7090/payment-success?method=paypal&orderId=@paypalOrderId" />
+                <input type="hidden" name="cancel_return"
+                       value="https://localhost:7090/payment-cancel?method=paypal" />
+
+                <input type="submit" class="btn btn-secondary" value="Pay with PayPal" />
+            </form>
+        </div>
+    }
+    else
+    {
+        <button class="btn btn-secondary" style="margin-left:20px;"
+                @onclick="CreatePayPalOrder">
+            Pay with PayPal
+        </button>
+    }
+
+    <!-- 3) Pay with Stripe (No Webhook) -->
+    <button class="btn btn-success" style="margin-left:20px;"
+            @onclick="InitiateStripePaymentNoWebhook">
+        Pay with Stripe (No Webhook)
+    </button>
+}
+
+@code {
+    private List<CartItemDto>? cartItems;
+    private decimal grandTotal;
+    private int paypalOrderId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Attach JWT so server sees us as authenticated
+        await AuthService.SetAuthHeaderAsync();
+
+        // Load the user's cart
+        cartItems = await Http.GetFromJsonAsync<List<CartItemDto>>("api/cart");
+        if (cartItems != null && cartItems.Count > 0)
+        {
+            grandTotal = cartItems.Sum(ci => ci.Quantity * ci.UnitPrice);
+        }
+    }
+
+    // 1) Stripe (Webhook) - your existing flow
+    private async Task InitiateStripePaymentWebhook()
+    {
+        var request = new PaymentRequest
+        {
+            Amount = grandTotal,
+            Currency = "usd"
+        };
+
+        var response = await Http.PostAsJsonAsync("api/payments/create-checkout-session", request);
+        if (response.IsSuccessStatusCode)
+        {
+            var paymentResp = await response.Content.ReadFromJsonAsync<PaymentResponse>();
+            if (!string.IsNullOrEmpty(paymentResp?.PaymentUrl))
+            {
+                NavManager.NavigateTo(paymentResp.PaymentUrl, forceLoad: true);
+            }
+        }
+    
+    }
+
+    // 2) PayPal - create an order on the server, then show the sandbox form
+    private async Task CreatePayPalOrder()
+    {
+        // calls e.g. /api/paypal/create-order
+        var response = await Http.PostAsync("api/paypal/create-order", null);
+        if (response.IsSuccessStatusCode)
+        {
+            paypalOrderId = await response.Content.ReadFromJsonAsync<int>();
+        }
+    }
+
+    // 3) Stripe (No Webhook)
+    private async Task InitiateStripePaymentNoWebhook()
+    {
+        var request = new PaymentRequest
+        {
+            Amount = grandTotal,
+            Currency = "usd"
+        };
+
+        // calls e.g. /api/payments/create-checkout-session-nowebhook
+        var response = await Http.PostAsJsonAsync("api/payments/create-checkout-session-nowebhook", request);
+        if (response.IsSuccessStatusCode)
+        {
+            var paymentResp = await response.Content.ReadFromJsonAsync<PaymentResponse>();
+            if (!string.IsNullOrEmpty(paymentResp?.PaymentUrl))
+            {
+                // redirect user to Stripe's Checkout
+                NavManager.NavigateTo(paymentResp.PaymentUrl, forceLoad: true);
+            }
+        }
+    }
+
+    // Minimal models
+    public class CartItemDto
+    {
+        public int ProductId { get; set; }
+        public int Quantity { get; set; }
+        public decimal UnitPrice { get; set; }
+    }
+
+    public class PaymentRequest
+    {
+        public decimal Amount { get; set; }
+        public string Currency { get; set; } = "usd";
+    }
+
+    public class PaymentResponse
+    {
+        public string PaymentUrl { get; set; } = string.Empty;
+    }
+}

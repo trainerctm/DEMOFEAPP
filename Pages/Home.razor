@@ -1,0 +1,50 @@
+﻿@page "/"
+@using DemoFEApp.AuthServices
+@inject HttpClient Http
+@inject AuthService AuthService
+
+<PageTitle>Home</PageTitle>
+
+@if (userProfile == null)
+{
+    <h3>Hello, world!</h3>
+}
+else
+{
+    <h3>Hello @userProfile.FirstName (@userProfile.Role)</h3>
+}
+
+@code {
+    private UserProfileModel? userProfile;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Attach the JWT (if any) to the HttpClient.
+        await AuthService.SetAuthHeaderAsync();
+
+        try
+        {
+            // Attempt to fetch the user's profile from the API.
+            userProfile = await Http.GetFromJsonAsync<UserProfileModel>("api/userprofiles/me");
+        }
+        catch
+        {
+            // If there's any error (e.g., user not authenticated => 401, or other issue),
+            // we set userProfile to null so that "Hello, world!" is displayed.
+            userProfile = null;
+        }
+    }
+
+    public class UserProfileModel
+    {
+        public int Id { get; set; }
+        public string GitHubId { get; set; } = string.Empty;
+        public string Username { get; set; } = string.Empty;
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
+        public string? Address { get; set; }
+        public string? Email { get; set; }
+        public string? PhoneNumber { get; set; }
+        public string Role { get; set; } = string.Empty;
+    }
+}
